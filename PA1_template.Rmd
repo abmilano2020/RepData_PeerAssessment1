@@ -117,7 +117,33 @@ mean(steps.per.day.full$total)
 median(steps.per.day.full$total)
 ```
 
-It keeps the same mean and 5 numbers summary but the frequencies are higher where 
-we the missing values have been inputed.
+Using this technique we obtained at least the same average of the steps as above.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+We create a two-levels new variable "day" in the dataset
+(Levels are namely “weekday” and “weekend”)
+
+```{r}
+week = dati.full %>%
+  mutate(day = as.POSIXlt(date)$wday) %>%
+  mutate(day = ifelse(day <= 5, "weekday", "weekend"))
+```
+
+We compute the average steps after grouping by interval and day
+
+```{r}
+avgsteps = week %>%
+  group_by(interval,day) %>%
+  summarise(avg = mean(steps))
+```
+
+We finally make a panel plot 
+```{r}
+ggplot(avgsteps,aes(interval,avg)) +
+  geom_line(lwd = 1.1, colour="#1e254a") +
+  facet_grid(rows = vars(day))+
+  labs(x="intervals", y="avg steps") + 
+  labs(title="Average steps")+
+  theme(legend.position = "none")
+```
