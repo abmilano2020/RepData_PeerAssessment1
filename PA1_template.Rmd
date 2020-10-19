@@ -49,10 +49,75 @@ median(steps.per.day$total)
 
 ## What is the average daily activity pattern?
 
+Always using dplyr, we omit the NAs as before, but this time we group by intervals.
+We then calculate the average of the steps taken.
+```{r,message = FALSE}  
+steps.per.interval = dati %>%
+  na.omit() %>%
+  group_by(interval) %>%
+  summarise(avg = mean(steps))
+```
+  
+The time series plot "Average steps per interval" follows:
+```{r}
+par(mar = c(5,5,5,1))
+plot(steps.per.interval, type = "l", lwd = 2, col="#1e254a",
+     main = "Average steps per interval",xlab = "intervals", ylab = "average steps")
+```
+  
+We also want to know which is the interval containing the maximum number of steps.
+We therefore select the top 1 entry (ordered by average calculated above).
 
+```{r}
+steps.per.interval %>%
+  top_n(1, avg)
+```
+
+It's the interval 835 with an average of 206 steps.
 
 ## Imputing missing values
 
+To see how many missing values are present in the database, we use the sapply function and adding any NA by column.
 
+```{r}
+sapply(dati, function(x) sum(is.na(x)))
+```
+
+Therefore, there are missing values only for the "steps" variable.
+We fill in all of the missing values with the average steps in that specific interval 
+computed above, through the combo mutate and replace.  
+We finally create a new data set "data.full".
+
+```{r}
+dati.full <- dati %>%
+  mutate(steps = replace(steps, is.na(steps),steps.per.interval$avg))
+```
+
+Through dpylr pipes we group by date and calculate number of steps taken per day.
+We visualize what has just been calculated through a histogram that we call "Steps per day".
+
+```{r}
+steps.per.day.full = dati.full %>%
+  group_by(date) %>%
+  summarise(total = sum(steps))
+```
+
+We visualize it through a histogram that we call "Steps per day".
+
+```{r}
+par(mar = c(5,5,5,1))
+hist(steps.per.day.full$total, col="#69b3a2", main = "Steps per day", xlab = "steps")
+axis(2, at = seq(0,30,5), labels = seq(0,30,5))
+```
+
+The mean and the median of steps taken per day follow:
+
+```{r}
+mean(steps.per.day.full$total)
+median(steps.per.day.full$total)
+```
+
+It keeps the same mean and 5 numbers summary but the frequencies are higher where 
+we the missing values have been inputed.
 
 ## Are there differences in activity patterns between weekdays and weekends?
