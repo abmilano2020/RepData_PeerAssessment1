@@ -4,11 +4,22 @@ output:
   html_document:
     keep_md: true
 ---
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ## Loading and preprocessing the data
 
+The first thing to do is to load the libraries that we will need for data manipulation and graphs: in this case dplyr and ggplot2.  
+We read the csv provided for this assignment through a read.csv, indicating also the presence of header and NA.
+We then modify the "date" variable imported as a character in date.
 
+```{R, message = FALSE}
+library(dplyr)
+library(ggplot2)
+dati = read.csv("activity.csv", header = TRUE, sep = ",", na.strings = "NA")
+dati$date = as.Date(as.character(dati$date))
+```
 
 ## What is mean total number of steps taken per day?
 
