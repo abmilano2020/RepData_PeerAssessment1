@@ -23,7 +23,29 @@ dati$date = as.Date(as.character(dati$date))
 
 ## What is mean total number of steps taken per day?
 
+Through dpylr pipes we omit the NAs, group by date and calculate number of steps taken per day.
 
+```{r,message = FALSE}  
+steps.per.day = dati %>%
+  na.omit() %>%
+  group_by(date) %>%
+  summarise(total = sum(steps))
+```
+  
+We visualize what has just been calculated through a histogram that we call "Steps per day".
+
+```{r}  
+par(mar = c(5,5,5,1))
+hist(steps.per.day$total, col="#69b3a2", main = "Steps per day", xlab = "steps")
+axis(2, at = seq(0,30,5), labels = seq(0,30,5))
+```
+
+The mean and the median of steps taken per day follow:
+
+```{r}
+mean(steps.per.day$total)
+median(steps.per.day$total)
+```
 
 ## What is the average daily activity pattern?
 
